@@ -12,7 +12,7 @@ namespace Jumbled
         private readonly IWordleAssist _wordleAssist = wordleAssist;
 
         [Function("WordleAssist")]
-        public IActionResult Run([HttpTrigger(AuthorizationLevel.Function, "get")] HttpRequest req)
+        public IActionResult Run([HttpTrigger("get")] HttpRequest req)
         {
             _logger.LogInformation("Request Received");
 
