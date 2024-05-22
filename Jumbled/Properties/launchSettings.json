@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "Jumbled": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7016"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker",
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "httpPort": 34922,
+      "useSSL": false
+    }
+  }
+}
