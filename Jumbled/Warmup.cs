@@ -7,7 +7,7 @@ namespace Jumbled
     public class Warmup()
     {
         [Function("Warmup")]
-        public IActionResult Run([HttpTrigger(AuthorizationLevel.Function, "get")] HttpRequest req)
+        public IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest req)
         {
             return new OkObjectResult("ready");
         }
