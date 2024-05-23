@@ -1,5 +1,6 @@
 ﻿namespace Jumbled.Services;
 using Jumbled.Services.Interfaces;
+using System.Reflection;
 
 public class WordleAssist : IWordleAssist
 {
@@ -8,7 +9,10 @@ public class WordleAssist : IWordleAssist
 
     public WordleAssist()
     {
-        words = [.. File.ReadAllLines("Resources/words_en.txt")];
+        var binDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        var rootDirectory = Path.GetFullPath(Path.Combine(binDirectory!));
+
+        words = [.. File.ReadAllLines(rootDirectory + "/Resources/words_en.txt")];
         dictionary = CreateDictionary();
     }
 
