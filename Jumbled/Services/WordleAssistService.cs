@@ -2,12 +2,12 @@
 using Jumbled.Services.Interfaces;
 using System.Reflection;
 
-public class WordleAssist : IWordleAssist
+public class WordleAssistService : IWordleAssist
 {
     private readonly Dictionary<string, HashSet<string>> dictionary;
     private readonly List<string> words;
 
-    public WordleAssist()
+    public WordleAssistService()
     {
         var binDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         var rootDirectory = Path.GetFullPath(Path.Combine(binDirectory!));
