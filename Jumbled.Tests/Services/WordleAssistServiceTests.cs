@@ -1,6 +1,6 @@
 ﻿using Jumbled.Services;
 
-namespace Jumbled.Tests;
+namespace Jumbled.Tests.Services;
 
 public class WordleAssistServiceTests
 {

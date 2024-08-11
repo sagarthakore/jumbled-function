@@ -50,6 +50,7 @@ jobs:
       shell: bash # For Linux, use bash
       run: |
         pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+        dotnet test
         dotnet build --configuration Release --output ./output
         popd
 
