@@ -1,6 +1,7 @@
-﻿namespace Jumbled.Services;
-using Jumbled.Services.Interfaces;
+﻿using Jumbled.Services.Interfaces;
 using System.Reflection;
+
+namespace Jumbled.Services;
 
 public class WordleAssistService : IWordleAssistService
 {
