@@ -12,4 +12,3 @@ public class Warmup()
         return new OkObjectResult("ready");
     }
 }
-

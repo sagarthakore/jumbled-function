@@ -23,4 +23,3 @@ public class WordleAssist(ILogger<WordleAssist> logger, IWordleAssistService wor
         return new OkObjectResult(_wordleAssist.GetWordGuess(word, exclude, include));
     }
 }
-
