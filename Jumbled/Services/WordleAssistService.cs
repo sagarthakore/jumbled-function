@@ -2,7 +2,7 @@
 using Jumbled.Services.Interfaces;
 using System.Reflection;
 
-public class WordleAssistService : IWordleAssist
+public class WordleAssistService : IWordleAssistService
 {
     private readonly Dictionary<string, HashSet<string>> dictionary;
     private readonly List<string> words;

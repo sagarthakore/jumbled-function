@@ -10,7 +10,7 @@ var host = new HostBuilder()
     {
         services.AddApplicationInsightsTelemetryWorkerService();
         services.ConfigureFunctionsApplicationInsights();
-        services.AddSingleton<IWordleAssist, WordleAssistService>();
+        services.AddSingleton<IWordleAssistService, WordleAssistService>();
     })
     .Build();
 
