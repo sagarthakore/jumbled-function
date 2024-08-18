@@ -263,5 +263,5 @@ paket-files/
 __pycache__/
 *.pyc
 
-# Visual Studio
-.vs/
+# Visual Studio Code
+.vscode/
