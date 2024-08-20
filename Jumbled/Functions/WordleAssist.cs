@@ -14,11 +14,11 @@ public class WordleAssist(ILogger<WordleAssist> logger, IWordleAssistService wor
     [Function("WordleAssist")]
     public IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest req)
     {
-        _logger.LogInformation("Request Received");
+        _logger.LogInformation("Request Received - {query}", req.Query);
 
-        string word = req.Query["word"].ToString();
-        string exclude = req.Query["exclude"].ToString();
-        string include = req.Query["include"].ToString();
+        string word = req.Query["word"].ToString().ToLowerInvariant();
+        string exclude = req.Query["exclude"].ToString().ToLowerInvariant();
+        string include = req.Query["include"].ToString().ToLowerInvariant();
 
         return new OkObjectResult(_wordleAssist.GetWordGuess(word, exclude, include));
     }
