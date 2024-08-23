@@ -18,23 +18,28 @@ public class WordleAssist(ILogger<WordleAssist> logger, IWordleAssistService wor
     public IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest req)
     {
         _logger.LogInformation("Request Received - {query}", req.Query);
-        
-        _telemetryClient.TrackEvent("WordleAssist Request Received", new Dictionary<string, string> {
-            {
-                "word", req.Query["word"]!.ToString()
-            },
-            {
-                "exclude", req.Query["exclude"]!.ToString()
-            },
-            {
-                "include", req.Query["include"]!.ToString()
-            }
-        });
 
+        var queryParams = ExtractQueryParameters(req);
+        TrackTelemetryEvent(queryParams);
+
+        return new OkObjectResult(_wordleAssist.GetWordGuess(queryParams.word, queryParams.exclude, queryParams.include));
+    }
+
+    private static (string word, string exclude, string include) ExtractQueryParameters(HttpRequest req)
+    {
         string word = req.Query["word"].ToString().ToLowerInvariant();
         string exclude = req.Query["exclude"].ToString().ToLowerInvariant();
         string include = req.Query["include"].ToString().ToLowerInvariant();
 
-        return new OkObjectResult(_wordleAssist.GetWordGuess(word, exclude, include));
+        return (word, exclude, include);
+    }
+
+    private void TrackTelemetryEvent((string word, string exclude, string include) queryParams)
+    {
+        _telemetryClient.TrackEvent("Request Received", new Dictionary<string, string> {
+            { "word", queryParams.word },
+            { "exclude", queryParams.exclude },
+            { "include", queryParams.include }
+        });
     }
 }
