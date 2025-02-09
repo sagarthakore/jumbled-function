@@ -5,22 +5,22 @@ namespace Jumbled.Services;
 
 public class WordleAssistService : IWordleAssistService
 {
-    private readonly Dictionary<string, HashSet<string>> dictionary;
-    private readonly List<string> words;
+    private readonly Dictionary<string, HashSet<string>> _dictionary;
+    private readonly List<string> _words;
 
     public WordleAssistService()
     {
         var binDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         var rootDirectory = Path.GetFullPath(Path.Combine(binDirectory!));
 
-        words = [.. File.ReadAllLines(rootDirectory + "/Resources/words_en.txt")];
-        dictionary = CreateDictionary();
+        _words = [.. File.ReadAllLines(rootDirectory + "/Resources/words_en.txt")];
+        _dictionary = CreateDictionary();
     }
 
     public HashSet<string> GetDictionaryWords(string jumbledWord)
     {
-        string jumbledWordKey = GenerateWordKey(jumbledWord.ToLower());
-        return dictionary.TryGetValue(jumbledWordKey, out HashSet<string>? value) ? value : [];
+        var jumbledWordKey = GenerateWordKey(jumbledWord.ToLower());
+        return _dictionary.TryGetValue(jumbledWordKey, out HashSet<string>? value) ? value : [];
     }
 
     public List<string> GetWordGuess(string guess, string exclude, string include)
@@ -28,14 +28,14 @@ public class WordleAssistService : IWordleAssistService
         if (guess.Length == 0) return [];
 
         var result = new List<string>();
-        HashSet<string> filteredWords = new(words.Where(word => word.Length == guess.Length));
+        HashSet<string> filteredWords = new(_words.Where(word => word.Length == guess.Length));
 
         if (!string.IsNullOrEmpty(exclude))
         {
-            foreach (string word in words.Where(word => word.Length == guess.Length))
+            foreach (var word in _words.Where(word => word.Length == guess.Length))
             {
-                bool candidate = false;
-                for (int i = 0; i < exclude.Length; i++)
+                var candidate = false;
+                for (var i = 0; i < exclude.Length; i++)
                 {
                     if (word.Contains(exclude[i]))
                     {
@@ -50,10 +50,10 @@ public class WordleAssistService : IWordleAssistService
 
         if (!string.IsNullOrEmpty(include) && include.Length == guess.Length)
         {
-            foreach (string word in words.Where(word => word.Length == guess.Length))
+            foreach (var word in _words.Where(word => word.Length == guess.Length))
             {
-                bool candidate = false;
-                for (int i = 0; i < include.Length; i++)
+                var candidate = false;
+                for (var i = 0; i < include.Length; i++)
                 {
                     if (include[i] != '_' && (!word.Contains(include[i]) || include[i] == word[i]))
                     {
@@ -66,10 +66,10 @@ public class WordleAssistService : IWordleAssistService
             }
         }
 
-        foreach (string word in filteredWords)
+        foreach (var word in filteredWords)
         {
-            bool candidate = true;
-            for (int i = 0; i < guess.Length; i++)
+            var candidate = true;
+            for (var i = 0; i < guess.Length; i++)
             {
                 if (guess[i] != '_' && guess[i] != word[i])
                 {
@@ -87,9 +87,9 @@ public class WordleAssistService : IWordleAssistService
     private Dictionary<string, HashSet<string>> CreateDictionary()
     {
         Dictionary<string, HashSet<string>> dict = [];
-        foreach (string word in words)
+        foreach (var word in _words)
         {
-            string wordKey = GenerateWordKey(word);
+            var wordKey = GenerateWordKey(word);
             if (!dict.TryGetValue(wordKey, out HashSet<string>? wordList))
             {
                 wordList = [];
@@ -102,7 +102,7 @@ public class WordleAssistService : IWordleAssistService
 
     private static string GenerateWordKey(string inputString)
     {
-        char[] chars = inputString.ToCharArray();
+        var chars = inputString.ToCharArray();
         Array.Sort(chars);
         return string.Concat(chars);
     }
