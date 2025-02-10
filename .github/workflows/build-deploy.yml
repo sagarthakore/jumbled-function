@@ -43,7 +43,7 @@ jobs:
     - name: 'Run Tests'
       shell: bash # For Linux, use bash
       run: |
-        dotnet test
+        dotnet test ./Jumbled.Tests/Jumbled.Tests.csproj
 
     - name: 'Resolve Project Dependencies Using Dotnet'
       shell: bash # For Linux, use bash
