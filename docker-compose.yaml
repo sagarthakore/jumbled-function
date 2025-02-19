@@ -9,6 +9,3 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - AzureWebJobsStorage=UseDevelopmentStorage=true
       - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
-    volumes:
-      - ${HOME}/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
-      - ${HOME}/.azure:/root/.azure:ro
