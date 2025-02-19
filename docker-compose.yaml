@@ -1,0 +1,14 @@
+services:
+  jumbled-function:
+    build:
+      context: .
+      dockerfile: Jumbled/Dockerfile
+    ports:
+      - "7071:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - AzureWebJobsStorage=UseDevelopmentStorage=true
+      - FUNCTIONS_WORKER_RUNTIME=dotnet-isolated
+    volumes:
+      - ${HOME}/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
+      - ${HOME}/.azure:/root/.azure:ro
