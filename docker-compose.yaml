@@ -1,8 +1,10 @@
 services:
   jumbled-function:
+    container_name: jumbled-function
     build:
       context: .
       dockerfile: Jumbled/Dockerfile
+    image: jumbled-function:latest
     ports:
       - "7071:80"
     environment:
