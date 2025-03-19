@@ -28,7 +28,7 @@ A .NET 8.0 Azure Functions application that provides assistance for Wordle playe
 3. Run the project:
 
 ```bash
-dotnet run --project Jumbled/Jumbled.csproj
+func host start --script-root ./Jumbled
 ```
 
 ## 🧪 Testing
