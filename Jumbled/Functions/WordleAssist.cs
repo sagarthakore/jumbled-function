@@ -1,6 +1,5 @@
 using Jumbled.Services.Interfaces;
 using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
@@ -8,9 +7,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Jumbled.Functions;
 
-public class WordleAssist(ILogger<WordleAssist> logger, IWordleAssistService wordleAssist, TelemetryConfiguration telemetryConfiguration)
+public class WordleAssist(ILogger<WordleAssist> logger, IWordleAssistService wordleAssist, TelemetryClient telemetryClient)
 {
-    private readonly TelemetryClient _telemetryClient = new(telemetryConfiguration);
+    private readonly TelemetryClient _telemetryClient = telemetryClient;
 
     [Function("WordleAssist")]
     public IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest req)
