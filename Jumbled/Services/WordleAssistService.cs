@@ -27,60 +27,53 @@ public class WordleAssistService : IWordleAssistService
     {
         if (guess.Length == 0) return [];
 
-        var result = new List<string>();
-        HashSet<string> filteredWords = new(_words.Where(word => word.Length == guess.Length));
+        var filteredWords = _words.Where(word => word.Length == guess.Length).ToHashSet();
 
         if (!string.IsNullOrEmpty(exclude))
         {
-            foreach (var word in _words.Where(word => word.Length == guess.Length))
-            {
-                var candidate = false;
-                for (var i = 0; i < exclude.Length; i++)
-                {
-                    if (word.Contains(exclude[i]))
-                    {
-                        candidate = true;
-                        break;
-                    }
-                }
-
-                if (candidate) filteredWords.Remove(word);
-            }
+            filteredWords = FilterByExclude(filteredWords, exclude);
         }
 
         if (!string.IsNullOrEmpty(include) && include.Length == guess.Length)
         {
-            foreach (var word in _words.Where(word => word.Length == guess.Length))
-            {
-                var candidate = false;
-                for (var i = 0; i < include.Length; i++)
-                {
-                    if (include[i] != '_' && (!word.Contains(include[i]) || include[i] == word[i]))
-                    {
-                        candidate = true;
-                        break;
-                    }
-                }
-
-                if (candidate) filteredWords.Remove(word);
-            }
+            filteredWords = FilterByInclude(filteredWords, include);
         }
 
-        foreach (var word in filteredWords)
+        return FilterByGuessPattern(filteredWords, guess);
+    }
+
+    private static HashSet<string> FilterByExclude(HashSet<string> words, string exclude)
+    {
+        var result = words.Where(word => !exclude.Any(ch => word.Contains(ch))).ToHashSet();
+        return result;
+    }
+
+    private static HashSet<string> FilterByInclude(HashSet<string> words, string include)
+    {
+        var result = words.Where(word =>
+            !Enumerable.Range(0, include.Length).Any(i =>
+                include[i] != '_' && (!word.Contains(include[i]) || include[i] == word[i])
+            )
+        ).ToHashSet();
+        return result;
+    }
+
+    private static List<string> FilterByGuessPattern(HashSet<string> words, string guess)
+    {
+        var result = new List<string>();
+        foreach (var word in words)
         {
-            var candidate = true;
+            bool match = true;
             for (var i = 0; i < guess.Length; i++)
             {
                 if (guess[i] != '_' && guess[i] != word[i])
                 {
-                    candidate = false;
+                    match = false;
                     break;
                 }
             }
-
-            if (candidate) result.Add(word);
+            if (match) result.Add(word);
         }
-
         return result;
     }
 
