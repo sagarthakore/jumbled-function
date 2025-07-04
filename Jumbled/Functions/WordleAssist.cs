@@ -14,7 +14,7 @@ public class WordleAssist(ILogger<WordleAssist> logger, IWordleAssistService wor
     [Function("WordleAssist")]
     public IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest req)
     {
-        logger.LogInformation("Request Received - {query}", req.Query);
+        logger.LogInformation("Request Received - {Query}", req.Query);
 
         var queryParams = ExtractQueryParameters(req);
         TrackTelemetryEvent(queryParams);
