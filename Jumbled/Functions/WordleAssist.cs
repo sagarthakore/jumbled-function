@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Jumbled.Functions;
 
-public class WordleAssist(ILogger<WordleAssist> logger, IWordleAssistService wordleAssist, TelemetryClient telemetryClient)
+public abstract class WordleAssist(ILogger<WordleAssist> logger, IWordleAssistService wordleAssist, TelemetryClient telemetryClient)
 {
     private readonly TelemetryClient _telemetryClient = telemetryClient;
 
