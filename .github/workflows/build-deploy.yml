@@ -46,16 +46,19 @@ jobs:
         dotnet test ./Jumbled.Tests/Jumbled.Tests.csproj
 
     - name: 'Resolve Project Dependencies Using Dotnet'
-      shell: bash # For Linux, use bash
+      shell: bash
       run: |
         dotnet publish ./Jumbled/Jumbled.csproj --configuration Release --output ./output --no-self-contained
-
-    - name: 'Run Azure Functions Action'
+    
+    - name: 'Create deployment package'
+      shell: bash
+      run: |
+        cd ./output
+        zip -r ../deploy.zip .
+    
+    - name: 'Deploy to Azure Functions'
       uses: Azure/functions-action@v1
-      id: fa
       with:
         app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-        package: './output'
+        package: 'deploy.zip'
         publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
-        scm-do-build-during-deployment: false
-        enable-oryx-build: false
