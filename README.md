@@ -1,11 +1,11 @@
 # Jumbled - Wordle Assistant Azure Function
 
-A .NET 8.0 Azure Functions application that provides assistance for Wordle players through a serverless API
+A .NET 10.0 Azure Functions application that provides assistance for Wordle players through a serverless API
 
 ## 🚀 Features
 
 - Wordle assistance functionality through HTTP-triggered Azure Function
-- Built with .NET 8.0 and Azure Functions v4
+- Built with .NET 10.0 and Azure Functions v4
 - Application Insights integration for telemetry
 - Dependency injection pattern using `IWordleAssistService`
 
@@ -17,7 +17,7 @@ A .NET 8.0 Azure Functions application that provides assistance for Wordle playe
 
 ## 📋 Prerequisites
 
-- .NET 8.0 SDK
+- .NET 10.0 SDK
 - Azure Functions Core Tools
 - Visual Studio 2022 or Visual Studio Code
 
