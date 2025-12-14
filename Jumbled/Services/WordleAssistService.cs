@@ -1,4 +1,5 @@
-﻿using Jumbled.Services.Interfaces;
+﻿using Jumbled.Models;
+using Jumbled.Services.Interfaces;
 using System.Reflection;
 
 namespace Jumbled.Services;
@@ -23,23 +24,23 @@ public class WordleAssistService : IWordleAssistService
         return _dictionary.TryGetValue(jumbledWordKey, out HashSet<string>? value) ? value : [];
     }
 
-    public List<string> GetWordGuess(string guess, string exclude, string include)
+    public List<string> GetWordGuess(WordleAssistRequest request)
     {
-        if (guess.Length == 0) return [];
+        if (request.Word.Length == 0) return [];
 
-        var filteredWords = _words.Where(word => word.Length == guess.Length).ToHashSet();
+        var filteredWords = _words.Where(word => word.Length == request.Word.Length).ToHashSet();
 
-        if (!string.IsNullOrEmpty(exclude))
+        if (!string.IsNullOrEmpty(request.Exclude))
         {
-            filteredWords = FilterByExclude(filteredWords, exclude);
+            filteredWords = FilterByExclude(filteredWords, request.Exclude);
         }
 
-        if (!string.IsNullOrEmpty(include) && include.Length == guess.Length)
+        if (!string.IsNullOrEmpty(request.Include) && request.Include.Length == request.Word.Length)
         {
-            filteredWords = FilterByInclude(filteredWords, include);
+            filteredWords = FilterByInclude(filteredWords, request.Include);
         }
 
-        return FilterByGuessPattern(filteredWords, guess);
+        return FilterByGuessPattern(filteredWords, request.Word);
     }
 
     private static HashSet<string> FilterByExclude(HashSet<string> words, string exclude)

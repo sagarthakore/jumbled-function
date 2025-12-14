@@ -1,4 +1,5 @@
-﻿using Jumbled.Services;
+﻿using Jumbled.Models;
+using Jumbled.Services;
 
 namespace Jumbled.Tests.Services;
 
@@ -27,7 +28,8 @@ public class WordleAssistServiceTests
     [InlineData("f______rk", "", "")]
     public void GetWordGuessWord_WordsExist_GetWords(string value, string exclude, string include)
     {
-        var result = _wordleAssistService.GetWordGuess(value, exclude, include);
+        var request = new WordleAssistRequest(value, exclude, include);
+        var result = _wordleAssistService.GetWordGuess(request);
         List<string> expected =
         [
             "fancywork",
@@ -43,7 +45,8 @@ public class WordleAssistServiceTests
     [InlineData("_rick", "tb", "")]
     public void GetWordGuessWordExcludeLetters_WordsExist_GetWords(string value, string exclude, string include)
     {
-        var result = _wordleAssistService.GetWordGuess(value, exclude, include);
+        var request = new WordleAssistRequest(value, exclude, include);
+        var result = _wordleAssistService.GetWordGuess(request);
         List<string> expected =
         [
             "crick",
@@ -57,7 +60,8 @@ public class WordleAssistServiceTests
     [InlineData("_ric_", "", "____b")]
     public void GetWordGuessWordIncludeLetters_WordsExist_GetWords(string value, string exclude, string include)
     {
-        var result = _wordleAssistService.GetWordGuess(value, exclude, include);
+        var request = new WordleAssistRequest(value, exclude, include);
+        var result = _wordleAssistService.GetWordGuess(request);
         List<string> expected =
         [
             "brick"
@@ -70,7 +74,8 @@ public class WordleAssistServiceTests
     [InlineData("_o___", "ad", "b__r_")]
     public void GetWordGuessWordIncludeExcludeLetters_WordsExist_GetWords(string value, string exclude, string include)
     {
-        var result = _wordleAssistService.GetWordGuess(value, exclude, include);
+        var request = new WordleAssistRequest(value, exclude, include);
+        var result = _wordleAssistService.GetWordGuess(request);
         List<string> expected =
         [
             "robes",
@@ -95,7 +100,8 @@ public class WordleAssistServiceTests
     [InlineData("kl__fd__h_la", "", "")]
     public void GetWordGuess_WordsDontExist_GetEmptyArray(string value, string exclude, string include)
     {
-        var result = _wordleAssistService.GetWordGuess(value, exclude, include);
+        var request = new WordleAssistRequest(value, exclude, include);
+        var result = _wordleAssistService.GetWordGuess(request);
         Assert.Empty(result);
     }
 }

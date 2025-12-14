@@ -1,3 +1,4 @@
+using Jumbled.Models;
 using Jumbled.Services.Interfaces;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Http;
@@ -7,36 +8,37 @@ using Microsoft.Extensions.Logging;
 
 namespace Jumbled.Functions;
 
-public sealed class WordleAssist(ILogger<WordleAssist> logger, IWordleAssistService wordleAssist, TelemetryClient telemetryClient)
+public sealed partial class WordleAssist(ILogger<WordleAssist> logger, IWordleAssistService wordleAssist, TelemetryClient telemetryClient)
 {
-    private readonly TelemetryClient _telemetryClient = telemetryClient;
-
     [Function("WordleAssist")]
     public IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest req)
     {
-        logger.LogInformation("Request Received - {Query}", req.Query);
+        var request = ExtractQueryParameters(req);
 
-        var queryParams = ExtractQueryParameters(req);
-        TrackTelemetryEvent(queryParams);
+        LogRequestReceived(logger, request);
+        TrackTelemetryEvent(request);
 
-        return new OkObjectResult(wordleAssist.GetWordGuess(queryParams.word, queryParams.exclude, queryParams.include));
+        return new OkObjectResult(wordleAssist.GetWordGuess(request));
     }
 
-    private static (string word, string exclude, string include) ExtractQueryParameters(HttpRequest req)
+    private static WordleAssistRequest ExtractQueryParameters(HttpRequest req)
     {
         var word = req.Query["word"].ToString().ToLowerInvariant();
         var exclude = req.Query["exclude"].ToString().ToLowerInvariant();
         var include = req.Query["include"].ToString().ToLowerInvariant();
 
-        return (word, exclude, include);
+        return new WordleAssistRequest(word, exclude, include);
     }
 
-    private void TrackTelemetryEvent((string word, string exclude, string include) queryParams)
+    private void TrackTelemetryEvent(WordleAssistRequest request)
     {
-        _telemetryClient.TrackEvent("Request Received", new Dictionary<string, string> {
-            { "word", queryParams.word },
-            { "exclude", queryParams.exclude },
-            { "include", queryParams.include }
+        telemetryClient.TrackEvent("Request Received", new Dictionary<string, string> {
+            { "word", request.Word },
+            { "exclude", request.Exclude },
+            { "include", request.Include }
         });
     }
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Request Received - {@Request}")]
+    private static partial void LogRequestReceived(ILogger logger, WordleAssistRequest request);
 }

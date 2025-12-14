@@ -11,9 +11,9 @@ A .NET 10.0 Azure Functions application that provides assistance for Wordle play
 
 ## 🛠️ Project Structure
 
-- Program.cs - Application entry point and DI configuration
+- `Program.cs` - Application entry point and DI configuration
 - `WordleAssistService` - Core service implementation
-- Jumbled.Tests - xUnit test project
+- `Jumbled.Tests` - xUnit test project
 
 ## 📋 Prerequisites
 
