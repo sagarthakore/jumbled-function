@@ -35,9 +35,16 @@ public class WordleAssistService : IWordleAssistService
             filteredWords = FilterByExclude(filteredWords, request.Exclude);
         }
 
-        if (!string.IsNullOrEmpty(request.Include) && request.Include.Length == request.Word.Length)
+        if (!string.IsNullOrEmpty(request.Include))
         {
-            filteredWords = FilterByInclude(filteredWords, request.Include);
+            var includePatterns = request.Include.Split(',', StringSplitOptions.RemoveEmptyEntries);
+            foreach (var pattern in includePatterns)
+            {
+                if (pattern.Length == request.Word.Length)
+                {
+                    filteredWords = FilterByInclude(filteredWords, pattern);
+                }
+            }
         }
 
         return FilterByGuessPattern(filteredWords, request.Word);
