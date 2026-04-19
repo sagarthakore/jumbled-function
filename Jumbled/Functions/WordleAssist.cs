@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Jumbled.Functions;
 
@@ -39,6 +40,7 @@ public sealed partial class WordleAssist(ILogger<WordleAssist> logger, IWordleAs
         });
     }
 
+    [ExcludeFromCodeCoverage]
     [LoggerMessage(Level = LogLevel.Information, Message = "Request Received - {@Request}")]
     private static partial void LogRequestReceived(ILogger logger, WordleAssistRequest request);
 }
