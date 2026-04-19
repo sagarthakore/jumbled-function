@@ -104,4 +104,21 @@ public class WordleAssistServiceTests
         var result = _wordleAssistService.GetWordGuess(request);
         Assert.Empty(result);
     }
+
+    [Fact]
+    public void GetWordGuess_EmptyWord_ReturnsEmptyList()
+    {
+        var request = new WordleAssistRequest("", "", "");
+        var result = _wordleAssistService.GetWordGuess(request);
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    public void GetWordGuess_IncludePatternLengthMismatch_SkipsPattern()
+    {
+        var request = new WordleAssistRequest("_ric_", "", "____b,ab");
+        var result = _wordleAssistService.GetWordGuess(request);
+        List<string> expected = ["brick"];
+        Assert.Equal(expected, result);
+    }
 }
