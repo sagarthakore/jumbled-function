@@ -6,6 +6,7 @@
         <Configuration>
           <Format>cobertura</Format>
           <ExcludeByFile>**/*.g.cs</ExcludeByFile>
+          <ExcludeByAttribute>ExcludeFromCodeCoverageAttribute</ExcludeByAttribute>
         </Configuration>
       </DataCollector>
     </DataCollectors>
