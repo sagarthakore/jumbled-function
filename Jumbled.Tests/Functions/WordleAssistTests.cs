@@ -68,10 +68,11 @@ public class WordleAssistTests
         service.GetWordGuess(Arg.Any<WordleAssistRequest>())
             .Returns(new List<string>());
 
-        sut.Run(BuildRequest());
+        var result = sut.Run(BuildRequest());
 
         service.Received(1).GetWordGuess(Arg.Is<WordleAssistRequest>(r =>
             r.Word == "" && r.Exclude == "" && r.Include == ""));
+        Assert.IsType<OkObjectResult>(result);
     }
 
     [Fact]
