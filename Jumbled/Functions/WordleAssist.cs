@@ -15,10 +15,24 @@ public sealed partial class WordleAssist(ILogger<WordleAssist> logger, IWordleAs
     {
         var request = ExtractQueryParameters(req);
 
+        if (!TryValidate(request, out var error))
+        {
+            return new BadRequestObjectResult(new { error });
+        }
+
         LogRequestReceived(logger, request);
         TrackTelemetryEvent(request);
 
         return new OkObjectResult(wordleAssist.GetWordGuess(request));
+    }
+
+    private void TrackTelemetryEvent(WordleAssistRequest request)
+    {
+        telemetryClient.TrackEvent("Request Received", new Dictionary<string, string> {
+            { "word", request.Word },
+            { "exclude", request.Exclude },
+            { "include", request.Include }
+        });
     }
 
     private static WordleAssistRequest ExtractQueryParameters(HttpRequest req)
@@ -30,13 +44,42 @@ public sealed partial class WordleAssist(ILogger<WordleAssist> logger, IWordleAs
         return new WordleAssistRequest(word, exclude, include);
     }
 
-    private void TrackTelemetryEvent(WordleAssistRequest request)
+    private static bool TryValidate(WordleAssistRequest request, out string error)
     {
-        telemetryClient.TrackEvent("Request Received", new Dictionary<string, string> {
-            { "word", request.Word },
-            { "exclude", request.Exclude },
-            { "include", request.Include }
-        });
+        if (string.IsNullOrEmpty(request.Word))
+        {
+            error = "Query parameter 'word' is required.";
+            return false;
+        }
+        if (!IsAllowed(request.Word, allowUnderscore: true))
+        {
+            error = "Query parameter 'word' may only contain letters and '_'.";
+            return false;
+        }
+        if (!IsAllowed(request.Exclude))
+        {
+            error = "Query parameter 'exclude' may only contain letters.";
+            return false;
+        }
+        if (!IsAllowed(request.Include, allowUnderscore: true, allowComma: true))
+        {
+            error = "Query parameter 'include' may only contain letters, '_', and ','.";
+            return false;
+        }
+        error = "";
+        return true;
+    }
+
+    private static bool IsAllowed(string s, bool allowUnderscore = false, bool allowComma = false)
+    {
+        foreach (var c in s)
+        {
+            if (c is >= 'a' and <= 'z') continue;
+            if (allowUnderscore && c == '_') continue;
+            if (allowComma && c == ',') continue;
+            return false;
+        }
+        return true;
     }
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Request Received - {@Request}")]

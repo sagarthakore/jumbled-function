@@ -1,38 +1,34 @@
-﻿using Jumbled.Models;
+using Jumbled.Models;
 using Jumbled.Services.Interfaces;
-using System.Reflection;
+using System.Collections.Frozen;
 
 namespace Jumbled.Services;
 
 public class WordleAssistService : IWordleAssistService
 {
-    private readonly Dictionary<string, HashSet<string>> _dictionary;
-    private readonly List<string> _words;
+    private readonly FrozenDictionary<int, string[]> _wordsByLength;
 
-    public WordleAssistService()
+    public WordleAssistService(IWordSource wordSource)
     {
-        var binDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        var rootDirectory = Path.GetFullPath(Path.Combine(binDirectory!));
-
-        _words = [.. File.ReadAllLines(rootDirectory + "/Resources/words_en.txt")];
-        _dictionary = CreateDictionary();
-    }
-
-    public HashSet<string> GetDictionaryWords(string jumbledWord)
-    {
-        var jumbledWordKey = GenerateWordKey(jumbledWord.ToLower());
-        return _dictionary.TryGetValue(jumbledWordKey, out HashSet<string>? value) ? value : [];
+        _wordsByLength = wordSource.GetWords()
+            .GroupBy(w => w.Length)
+            .ToFrozenDictionary(g => g.Key, g => g.ToArray());
     }
 
     public List<string> GetWordGuess(WordleAssistRequest request)
     {
-        if (request.Word.Length == 0) return [];
+        if (string.IsNullOrEmpty(request.Word)) return [];
 
-        var filteredWords = _words.Where(word => word.Length == request.Word.Length).ToHashSet();
+        if (!_wordsByLength.TryGetValue(request.Word.Length, out var candidates))
+        {
+            return [];
+        }
+
+        IEnumerable<string> filtered = candidates;
 
         if (!string.IsNullOrEmpty(request.Exclude))
         {
-            filteredWords = FilterByExclude(filteredWords, request.Exclude);
+            filtered = FilterByExclude(filtered, request.Exclude);
         }
 
         if (!string.IsNullOrEmpty(request.Include))
@@ -42,33 +38,31 @@ public class WordleAssistService : IWordleAssistService
             {
                 if (pattern.Length == request.Word.Length)
                 {
-                    filteredWords = FilterByInclude(filteredWords, pattern);
+                    filtered = FilterByInclude(filtered, pattern);
                 }
             }
         }
 
-        return FilterByGuessPattern(filteredWords, request.Word);
+        return FilterByGuessPattern(filtered, request.Word).Order().ToList();
     }
 
-    private static HashSet<string> FilterByExclude(HashSet<string> words, string exclude)
+    private static IEnumerable<string> FilterByExclude(IEnumerable<string> words, string exclude)
     {
-        var result = words.Where(word => !exclude.Any(ch => word.Contains(ch))).ToHashSet();
-        return result;
+        var bad = exclude.ToHashSet();
+        return words.Where(word => !word.Any(bad.Contains));
     }
 
-    private static HashSet<string> FilterByInclude(HashSet<string> words, string include)
+    private static IEnumerable<string> FilterByInclude(IEnumerable<string> words, string include)
     {
-        var result = words.Where(word =>
+        return words.Where(word =>
             !Enumerable.Range(0, include.Length).Any(i =>
                 include[i] != '_' && (!word.Contains(include[i]) || include[i] == word[i])
             )
-        ).ToHashSet();
-        return result;
+        );
     }
 
-    private static List<string> FilterByGuessPattern(HashSet<string> words, string guess)
+    private static IEnumerable<string> FilterByGuessPattern(IEnumerable<string> words, string guess)
     {
-        var result = new List<string>();
         foreach (var word in words)
         {
             bool match = true;
@@ -80,31 +74,7 @@ public class WordleAssistService : IWordleAssistService
                     break;
                 }
             }
-            if (match) result.Add(word);
+            if (match) yield return word;
         }
-        return result;
-    }
-
-    private Dictionary<string, HashSet<string>> CreateDictionary()
-    {
-        Dictionary<string, HashSet<string>> dict = [];
-        foreach (var word in _words)
-        {
-            var wordKey = GenerateWordKey(word);
-            if (!dict.TryGetValue(wordKey, out HashSet<string>? wordList))
-            {
-                wordList = [];
-                dict[wordKey] = wordList;
-            }
-            wordList.Add(word);
-        }
-        return dict;
-    }
-
-    private static string GenerateWordKey(string inputString)
-    {
-        var chars = inputString.ToCharArray();
-        Array.Sort(chars);
-        return string.Concat(chars);
     }
 }

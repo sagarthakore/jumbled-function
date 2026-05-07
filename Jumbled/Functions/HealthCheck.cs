@@ -7,13 +7,11 @@ namespace Jumbled.Functions;
 
 public sealed class HealthCheck(HealthCheckService healthCheckService)
 {
-    private readonly HealthCheckService _healthCheckService = healthCheckService;
-
     [Function("HealthCheck")]
     public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest req)
     {
-        var healthReport = await _healthCheckService.CheckHealthAsync();
-        
+        var healthReport = await healthCheckService.CheckHealthAsync(req.HttpContext.RequestAborted);
+
         var response = new
         {
             status = healthReport.Status.ToString(),
@@ -27,8 +25,8 @@ public sealed class HealthCheck(HealthCheckService healthCheckService)
             })
         };
 
-        var statusCode = healthReport.Status == HealthStatus.Healthy 
-            ? StatusCodes.Status200OK 
+        var statusCode = healthReport.Status == HealthStatus.Healthy
+            ? StatusCodes.Status200OK
             : StatusCodes.Status503ServiceUnavailable;
 
         return new ObjectResult(response) { StatusCode = statusCode };

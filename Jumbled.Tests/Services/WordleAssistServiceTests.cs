@@ -1,34 +1,21 @@
-﻿using Jumbled.Models;
+using Jumbled.Models;
 using Jumbled.Services;
 
 namespace Jumbled.Tests.Services;
 
-public class WordleAssistServiceTests
+public sealed class WordleAssistServiceFixture
 {
-    private readonly WordleAssistService _wordleAssistService = new();
+    public WordleAssistService Service { get; } = new(new FileWordSource());
+}
 
-    [Theory]
-    [InlineData("danger")]
-    public void GetDictionaryWords_WordsExist_GetWords(string value)
+public class WordleAssistServiceTests(WordleAssistServiceFixture fixture) : IClassFixture<WordleAssistServiceFixture>
+{
+    private readonly WordleAssistService _wordleAssistService = fixture.Service;
+
+    [Fact]
+    public void GetWordGuessWord_WordsExist_GetWords()
     {
-        var result = _wordleAssistService.GetDictionaryWords(value);
-        HashSet<string> expected =
-        [
-            "danger",
-            "gander",
-            "garden",
-            "grande",
-            "ranged"
-        ];
-
-        Assert.Equal(expected, result);
-    }
-
-    [Theory]
-    [InlineData("f______rk", "", "")]
-    public void GetWordGuessWord_WordsExist_GetWords(string value, string exclude, string include)
-    {
-        var request = new WordleAssistRequest(value, exclude, include);
+        var request = new WordleAssistRequest("f______rk");
         var result = _wordleAssistService.GetWordGuess(request);
         List<string> expected =
         [
@@ -41,11 +28,10 @@ public class WordleAssistServiceTests
         Assert.Equal(expected, result);
     }
 
-    [Theory]
-    [InlineData("_rick", "tb", "")]
-    public void GetWordGuessWordExcludeLetters_WordsExist_GetWords(string value, string exclude, string include)
+    [Fact]
+    public void GetWordGuessWordExcludeLetters_WordsExist_GetWords()
     {
-        var request = new WordleAssistRequest(value, exclude, include);
+        var request = new WordleAssistRequest("_rick", "tb");
         var result = _wordleAssistService.GetWordGuess(request);
         List<string> expected =
         [
@@ -56,25 +42,20 @@ public class WordleAssistServiceTests
         Assert.Equal(expected, result);
     }
 
-    [Theory]
-    [InlineData("_ric_", "", "____b")]
-    public void GetWordGuessWordIncludeLetters_WordsExist_GetWords(string value, string exclude, string include)
+    [Fact]
+    public void GetWordGuessWordIncludeLetters_WordsExist_GetWords()
     {
-        var request = new WordleAssistRequest(value, exclude, include);
+        var request = new WordleAssistRequest("_ric_", "", "____b");
         var result = _wordleAssistService.GetWordGuess(request);
-        List<string> expected =
-        [
-            "brick"
-        ];
+        List<string> expected = ["brick"];
 
         Assert.Equal(expected, result);
     }
 
-    [Theory]
-    [InlineData("_o___", "ad", "b__r_")]
-    public void GetWordGuessWordIncludeExcludeLetters_WordsExist_GetWords(string value, string exclude, string include)
+    [Fact]
+    public void GetWordGuessWordIncludeExcludeLetters_WordsExist_GetWords()
     {
-        var request = new WordleAssistRequest(value, exclude, include);
+        var request = new WordleAssistRequest("_o___", "ad", "b__r_");
         var result = _wordleAssistService.GetWordGuess(request);
         List<string> expected =
         [
@@ -88,19 +69,10 @@ public class WordleAssistServiceTests
         Assert.Equal(expected, result);
     }
 
-    [Theory]
-    [InlineData("klsjfdkfhfla")]
-    public void GetDictionaryWords_WordsDontExist_GetEmptyArray(string value)
+    [Fact]
+    public void GetWordGuess_WordsDontExist_GetEmptyArray()
     {
-        var result = _wordleAssistService.GetDictionaryWords(value);
-        Assert.Empty(result);
-    }
-
-    [Theory]
-    [InlineData("kl__fd__h_la", "", "")]
-    public void GetWordGuess_WordsDontExist_GetEmptyArray(string value, string exclude, string include)
-    {
-        var request = new WordleAssistRequest(value, exclude, include);
+        var request = new WordleAssistRequest("kl__fd__h_la");
         var result = _wordleAssistService.GetWordGuess(request);
         Assert.Empty(result);
     }
