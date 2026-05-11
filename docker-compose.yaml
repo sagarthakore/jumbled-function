@@ -6,6 +6,7 @@ services:
 
   jumbled-function:
     container_name: jumbled-function
+    platform: linux/amd64
     build:
       context: .
       dockerfile: Jumbled/Dockerfile
