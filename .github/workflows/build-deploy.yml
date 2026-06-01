@@ -33,7 +33,7 @@ jobs:
     environment: prod
     steps:
     - name: 'Checkout GitHub Action'
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
 
     - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
       uses: actions/setup-dotnet@v5
